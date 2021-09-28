@@ -1,20 +1,19 @@
 const { WebClient } = require('@slack/web-api');
-// Create a new instance of the WebClient class with the token read from your environment variable
-const web = new WebClient(process.env.SLACK_TOKEN);
-// The current date
-const currentTime = new Date().toTimeString();
+const client = new WebClient(process.env.SLACK_TOKEN);
 
-(async () => {
-
+const getMessageTimestamps = async(): Promise<String[]> => {
   try {
-    // Use the `chat.postMessage` method to send a message from this app
-    await web.chat.postMessage({
-      channel: '#general',
-      text: `The current time is ${currentTime}`,
+    const result = await client.conversations.history({
+      channel: process.env.CHANNEL
     });
-    console.log('Message posted!');
+    return result.messages.map(message => message.ts);
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
+}
 
-})();
+console.log(getMessageTimestamps().then(
+  (messages) => {
+    console.log(messages)
+  }
+));

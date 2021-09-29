@@ -1,7 +1,7 @@
 const { WebClient } = require('@slack/web-api');
 const client = new WebClient(process.env.SLACK_TOKEN);
 
-const getMessageTimestamps = async(): Promise<String[]> => {
+const getMessageTimestamps = async(): Promise<string[]> => {
   try {
     const result = await client.conversations.history({
       channel: process.env.CHANNEL

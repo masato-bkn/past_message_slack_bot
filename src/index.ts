@@ -17,8 +17,16 @@ const getMessageTimestamps = async(): Promise<string[] | undefined> => {
   }
 }
 
-console.log(getMessageTimestamps().then(
+const getRandomNumber = (max: number) : number=> {
+  return Math.floor(Math.random() * max)
+}
+
+getMessageTimestamps().then(
   (messages) => {
-    console.log(messages)
+    if (messages == undefined) {
+      return undefined
+    }
+    const i = getRandomNumber(messages.length)
+    console.log(messages[i])
   }
-));
+);

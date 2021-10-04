@@ -1,13 +1,14 @@
 import { WebClient } from '@slack/web-api';
 import { Message } from '@slack/web-api/dist/response/GroupsRepliesResponse';
 
-const CHANNEL_ID = process.env.CHANNEL_ID || '';
+const MESSASGE_GET_CHANNEL_ID = process.env.MESSASGE_GET_CHANNEL_ID || '';
+const MESSASGE_POST_CHANNEL_ID = process.env.MESSASGE_POST_CHANNEL_ID || '';
 
 const client = new WebClient(process.env.SLACK_TOKEN);
 
 const getMessageTimestamps = async(): Promise<string[]> => {
   try {
-    const result = await client.conversations.history({channel: CHANNEL_ID});
+    const result = await client.conversations.history({channel: MESSASGE_GET_CHANNEL_ID});
 
     if (result.messages == undefined) {
       return []
@@ -26,7 +27,7 @@ const getRandomNumber = (max: number) : number=> {
 
 const getPermaLink = async(messageTimeStamp: string): Promise<string> => {
   try {
-    const result = await client.chat.getPermalink({channel: CHANNEL_ID, message_ts: messageTimeStamp})
+    const result = await client.chat.getPermalink({channel: MESSASGE_GET_CHANNEL_ID, message_ts: messageTimeStamp})
     return result.permalink || '';
   } catch (error) {
     console.log("fail: getPermaLink error is ${error}")
@@ -36,7 +37,7 @@ const getPermaLink = async(messageTimeStamp: string): Promise<string> => {
 
 const postMessageLink = async (link: string): Promise<void> => {
   try {
-    await client.chat.postMessage({channel: CHANNEL_ID, text: link})
+    await client.chat.postMessage({channel: MESSASGE_POST_CHANNEL_ID, text: link})
   } catch (error) {
     console.log("fail: postMessageLink error is ${error}")
     console.log(error)
@@ -45,7 +46,12 @@ const postMessageLink = async (link: string): Promise<void> => {
 
 (async() => {
   const timeStamps = await getMessageTimestamps();
-  const i = getRandomNumber(timeStamps.length)
-  const link = await getPermaLink(timeStamps[i])
-  await postMessageLink(link)
+
+  let i = 0 
+  while (i < 5) {
+    const index = getRandomNumber(timeStamps.length)
+    const link = await getPermaLink(timeStamps[index])
+    await postMessageLink(link)
+    i += 1
+  }
 })();
